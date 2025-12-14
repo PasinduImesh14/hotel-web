@@ -1,0 +1,37 @@
+/* globals.css */
+
+/* Tailwind base import */
+@import "tailwindcss";
+
+/* Slick Carousel styles */
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";
+
+/* Add any of your custom global styles below */
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: white;
+}
+
+@import 'react-date-range/dist/styles.css';
+@import 'react-date-range/dist/theme/default.css';
+@import "flag-icons/css/flag-icons.min.css";
+
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+@keyframes loading {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(0%); }
+  100% { transform: translateX(100%); }
+}

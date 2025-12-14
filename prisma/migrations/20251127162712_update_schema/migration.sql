@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `room` ADD COLUMN `capacity` INTEGER NOT NULL DEFAULT 1;

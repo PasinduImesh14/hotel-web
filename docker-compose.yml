@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  nextjs:
+    image: node:20-bullseye
+    # mhartvishwajith448/travel-nextjs:latest
+    container_name: travel_nextjs
+    working_dir: /app
+    volumes:
+      - ./:/app
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=mysql://root:1234@db:3306/hotel_db
+      - ADMIN_API_SECRET=MY_SUPER_SECRET
+      - NEXT_PRIVATE_TURBOPACK=0
+      - EMAIL_HOST=smtp.gmail.com
+      - EMAIL_PORT=587
+      - EMAIL_USER=sceniccottagesigiriya@gmail.com
+      - EMAIL_PASSWORD=xvntrmqvexegbjdi
+      - ADMIN_EMAIL=sceniccottagesigiriya@gmail.com
+    command: sh -c "npm install && npx prisma generate && npx prisma db push && npm run dev"
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: travel_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: hotel_db
+    ports:
+      - "3307:3306"  # host port 3307 maps to container 3306
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
