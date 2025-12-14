@@ -67,45 +67,71 @@ const Nav = ({ openNav }: Props) => {
       transition={{ duration: 0.8 }}
     >
       <div className="relative z-10 flex items-center justify-between h-[10vh] sm:h-[12vh] w-[92%] md:w-[88%] xl:w-[80%] mx-auto transition-colors duration-300">
-        {/* Logo */}
+        
+        {/* ============ UPDATED LOGO SECTION START ============ */}
         <motion.div
-          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold flex items-baseline cursor-pointer"
+          className="flex flex-col items-center justify-center cursor-pointer"
           whileHover={{ scale: 1.05 }}
         >
-          <span className={linkTextClass}>Scenic</span>
-          <span
-            className={`ml-1 font-normal text-sm sm:text-base md:text-xl lg:text-2xl ${linkTextClass}`}
-          >
-            Cottage
-          </span>
+          {/* Top Row: Scenic Cottage */}
+          <div className="flex items-baseline leading-none">
+            {/* REDUCED SIZE: Was text-2xl...lg:text-5xl */}
+            <span
+              className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold ${linkTextClass}`}
+            >
+              Scenic
+            </span>
+            {/* REDUCED SIZE: Was text-sm...lg:text-2xl */}
+            <span
+              className={`ml-1 font-normal text-xs sm:text-sm md:text-lg lg:text-xl ${linkTextClass}`}
+            >
+              Cottage
+            </span>
+          </div>
+
+          {/* Bottom Row: SIGIRIYA */}
+          {/* Corrected mt-0.1 to mt-[1px] for valid spacing */}
+          <div className={`w-full flex justify-between ${linkTextClass} mt-[1px] sm:mt-[2px]`}>
+            {["S", "I", "G", "I", "R", "I", "Y", "A"].map((letter, i) => (
+              <span
+                key={i}
+                // REDUCED SIZE: Was text-[0.5rem]...lg:text-[0.9rem]
+                className="text-[0.4rem] sm:text-[0.5rem] md:text-[0.6rem] lg:text-[0.75rem] font-medium"
+              >
+                {letter}
+              </span>
+            ))}
+          </div>
         </motion.div>
+        {/* ============ UPDATED LOGO SECTION END ============ */}
+
 
         {/* Desktop Nav Links */}
-       <div
-  className="hidden lg:flex items-center justify-center absolute left-1/2 -translate-x-1/2"
-  style={{
-    gap:
-      windowWidth >= 1536
-        ? scrolled
-          ? "3rem"
-          : "2rem"
-        : windowWidth >= 1280
-        ? scrolled
-          ? "2.2rem"
-          : "1.4rem"
-        : scrolled
-        ? "1.4rem"
-        : "1rem", // Important: keeps gap small for 1024–1280px
-    maxWidth:
-      windowWidth >= 1536
-        ? "900px"
-        : windowWidth >= 1280
-        ? "750px"
-        : "620px", // prevents overflow into logo
-    width: "100%",
-    transition: "gap 0.8s ease",
-  }}
->
+        <div
+          className="hidden lg:flex items-center justify-center absolute left-1/2 -translate-x-1/2"
+          style={{
+            gap:
+              windowWidth >= 1536
+                ? scrolled
+                  ? "3rem"
+                  : "2rem"
+                : windowWidth >= 1280
+                ? scrolled
+                  ? "2.2rem"
+                  : "1.4rem"
+                : scrolled
+                ? "1.4rem"
+                : "1rem", 
+            maxWidth:
+              windowWidth >= 1536
+                ? "900px"
+                : windowWidth >= 1280
+                ? "750px"
+                : "620px",
+            width: "100%",
+            transition: "gap 0.8s ease",
+          }}
+        >
           {navLinks.map((link) => (
             <Link href={link.url} key={link.id} className="group">
               <p
@@ -125,20 +151,19 @@ const Nav = ({ openNav }: Props) => {
 
         {/* Book Now + Mobile Menu */}
         <div className="flex items-center space-x-3 sm:space-x-5">
-         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-  <Link
-    href={bookingLink}
-    className={`flex items-center justify-center gap-2 border-2 
-      rounded-full transition-colors duration-200 
-      text-[0.7rem] sm:text-[0.8rem] md:text-[0.9rem] lg:text-[1rem]
-      px-3 sm:px-4 md:px-6 py-1 sm:py-1.5 md:py-2
-      min-w-[80px] sm:min-w-[100px] md:min-w-[120px]
-      ${linkHoverClass}`}
-  >
-    Book Now <FaBed className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5"/>
-  </Link>
-</motion.div>
-
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Link
+              href={bookingLink}
+              className={`flex items-center justify-center gap-2 border-2 
+              rounded-full transition-colors duration-200 
+              text-[0.7rem] sm:text-[0.8rem] md:text-[0.9rem] lg:text-[1rem]
+              px-3 sm:px-4 md:px-6 py-1 sm:py-1.5 md:py-2
+              min-w-[80px] sm:min-w-[100px] md:min-w-[120px]
+              ${linkHoverClass}`}
+            >
+              Book Now <FaBed className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5" />
+            </Link>
+          </motion.div>
 
           <HiBars3BottomRight
             onClick={openNav}
