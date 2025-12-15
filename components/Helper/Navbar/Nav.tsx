@@ -7,6 +7,21 @@ import { FaBed } from "react-icons/fa";
 import { HiBars3BottomRight } from "react-icons/hi2";
 import { motion } from "motion/react";
 import svgPaths from "./svgpath";
+import { Home, BedDouble, Settings, MapPin, Info, Calendar } from "lucide-react";
+import { usePathname } from "next/navigation";
+
+// --- Configuration ---
+const PRIMARY_GREEN = "#007326";
+const DARK_GREEN = "#003b14";
+
+const iconMap: Record<string, React.ReactNode> = {
+  Home: <Home className="w-3.5 h-3.5" />,
+  Rooms: <BedDouble className="w-3.5 h-3.5" />,
+  Services: <Settings className="w-3.5 h-3.5" />,
+  Places: <MapPin className="w-3.5 h-3.5" />,
+  "About Us": <Info className="w-3.5 h-3.5" />,
+  Booking: <Calendar className="w-3.5 h-3.5" />,
+};
 
 type Props = {
   openNav: () => void;
@@ -15,35 +30,36 @@ type Props = {
 const Nav = ({ openNav }: Props) => {
   const [scrolled, setScrolled] = useState(false);
   const [windowWidth, setWindowWidth] = useState(0);
+  const pathname = usePathname();
 
-  const bookingLink =
-    navLinks.find((link) => link.url === "/booking")?.url || "/booking";
+  const bookingLink = navLinks.find((link) => link.url === "/booking")?.url || "/booking";
 
-  const navBackground =
-    windowWidth < 1023 && scrolled ? "bg-white" : "bg-transparent";
+  const isMobile = windowWidth < 1024;
+  const navBackground = isMobile 
+    ? "bg-white shadow-sm"  
+    : scrolled 
+      ? "bg-white"          
+      : "bg-transparent";   
 
-  // Detect scroll
+  const linkTextClass = (isMobile || scrolled) ? "text-[#003b14]" : "text-white";
+  const linkHoverClass = (isMobile || scrolled)
+    ? "border-[#003b14] text-[#003b14] hover:bg-[#003b14] hover:text-white"
+    : "border-white text-white hover:bg-white hover:text-black";
+
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-
+    const handleScroll = () => setScrolled(window.scrollY > 50);
     handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Detect window width (SSR-SAFE)
   useEffect(() => {
     const updateWidth = () => setWindowWidth(window.innerWidth);
-
     updateWidth();
     window.addEventListener("resize", updateWidth);
-
     return () => window.removeEventListener("resize", updateWidth);
   }, []);
 
-  // Responsive font sizes
   const getLinkFontSize = () => {
     if (windowWidth > 1600) return "0.9rem";
     if (windowWidth > 1400) return "0.8rem";
@@ -53,12 +69,6 @@ const Nav = ({ openNav }: Props) => {
     return "0.75rem";
   };
 
-  const linkTextClass = scrolled ? "text-[#003b14]" : "text-white";
-
-  const linkHoverClass = scrolled
-    ? "border-[#003b14] text-[#003b14] hover:bg-[#003b14] hover:text-white"
-    : "border-white text-white hover:bg-white hover:text-black";
-
   return (
     <motion.div
       className={`fixed top-0 left-0 w-full z-[1000] transition-all duration-300 ${navBackground}`}
@@ -66,146 +76,115 @@ const Nav = ({ openNav }: Props) => {
       animate={{ y: 0 }}
       transition={{ duration: 0.8 }}
     >
-      <div className="relative z-10 flex items-center justify-between h-[10vh] sm:h-[12vh] w-[92%] md:w-[88%] xl:w-[80%] mx-auto transition-colors duration-300">
+      {/* UPDATED: Changed lg:h-[12vh] to lg:h-[10vh] to reduce desktop height */}
+      <div className="relative z-10 flex flex-col justify-center w-[92%] md:w-[88%] xl:w-[80%] mx-auto transition-colors duration-300 pt-2 pb-1 lg:pt-2 lg:pb-2 lg:h-[10vh]">
         
-        {/* ============ UPDATED LOGO SECTION START ============ */}
-        <motion.div
-          className="flex flex-col items-center justify-center cursor-pointer"
-          whileHover={{ scale: 1.05 }}
-        >
-          {/* Top Row: Scenic Cottage */}
-          <div className="flex items-baseline leading-none">
-            {/* REDUCED SIZE: Was text-2xl...lg:text-5xl */}
-            <span
-              className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold ${linkTextClass}`}
-            >
-              Scenic
-            </span>
-            {/* REDUCED SIZE: Was text-sm...lg:text-2xl */}
-            <span
-              className={`ml-1 font-normal text-xs sm:text-sm md:text-lg lg:text-xl ${linkTextClass}`}
-            >
-              Cottage
-            </span>
-          </div>
-
-          {/* Bottom Row: SIGIRIYA */}
-          {/* Corrected mt-0.1 to mt-[1px] for valid spacing */}
-          <div className={`w-full flex justify-between ${linkTextClass} mt-[1px] sm:mt-[2px]`}>
-            {["S", "I", "G", "I", "R", "I", "Y", "A"].map((letter, i) => (
-              <span
-                key={i}
-                // REDUCED SIZE: Was text-[0.5rem]...lg:text-[0.9rem]
-                className="text-[0.4rem] sm:text-[0.5rem] md:text-[0.6rem] lg:text-[0.75rem] font-medium"
-              >
-                {letter}
+        {/* ============ TOP ROW ============ */}
+        <div className="flex items-center justify-between w-full mb-1 lg:mb-0">
+          
+          {/* Logo Section */}
+          <motion.div className="flex flex-col items-center justify-center cursor-pointer" whileHover={{ scale: 1.05 }}>
+            <div className="flex items-baseline leading-none">
+              <span className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold ${linkTextClass}`}>
+                Scenic
               </span>
-            ))}
-          </div>
-        </motion.div>
-        {/* ============ UPDATED LOGO SECTION END ============ */}
+              <span className={`ml-1 font-normal text-xs sm:text-sm md:text-lg lg:text-xl ${linkTextClass}`}>
+                Cottage
+              </span>
+            </div>
+            <div className={`w-full flex justify-between ${linkTextClass} mt-[1px] sm:mt-[2px]`}>
+              {["S", "I", "G", "I", "R", "I", "Y", "A"].map((letter, i) => (
+                <span key={i} className="text-[0.4rem] sm:text-[0.5rem] md:text-[0.6rem] lg:text-[0.75rem] font-medium">
+                  {letter}
+                </span>
+              ))}
+            </div>
+          </motion.div>
 
-
-        {/* Desktop Nav Links */}
-        <div
-          className="hidden lg:flex items-center justify-center absolute left-1/2 -translate-x-1/2"
-          style={{
-            gap:
-              windowWidth >= 1536
-                ? scrolled
-                  ? "3rem"
-                  : "2rem"
-                : windowWidth >= 1280
-                ? scrolled
-                  ? "2.2rem"
-                  : "1.4rem"
-                : scrolled
-                ? "1.4rem"
-                : "1rem", 
-            maxWidth:
-              windowWidth >= 1536
-                ? "900px"
-                : windowWidth >= 1280
-                ? "750px"
-                : "620px",
-            width: "100%",
-            transition: "gap 0.8s ease",
-          }}
-        >
-          {navLinks.map((link) => (
-            <Link href={link.url} key={link.id} className="group">
-              <p
-                className={`relative font-medium cursor-pointer transition-all duration-[1200ms] ${linkTextClass}
+          {/* Desktop Links */}
+          <div
+            className="hidden lg:flex items-center justify-center absolute left-1/2 -translate-x-1/2"
+            style={{
+              gap: windowWidth >= 1536 ? (scrolled ? "3rem" : "2rem") : windowWidth >= 1280 ? (scrolled ? "2.2rem" : "1.4rem") : (scrolled ? "1.4rem" : "1rem"),
+              maxWidth: windowWidth >= 1536 ? "900px" : windowWidth >= 1280 ? "750px" : "620px",
+              width: "100%",
+              transition: "gap 0.8s ease",
+            }}
+          >
+            {navLinks.map((link) => (
+              <Link href={link.url} key={link.id} className="group">
+                <p
+                  className={`relative font-medium cursor-pointer transition-all duration-[1200ms] ${linkTextClass}
                   after:block after:content-[''] after:absolute after:-bottom-[3px] after:left-0
                   after:h-[2px] after:bg-[#007326] after:w-0 after:transition-all after:duration-300
                   group-hover:after:w-full whitespace-nowrap`}
-                style={{
-                  fontSize: getLinkFontSize(),
-                }}
+                  style={{ fontSize: getLinkFontSize() }}
+                >
+                  {link.label}
+                </p>
+              </Link>
+            ))}
+          </div>
+
+          {/* Right Side */}
+          <div className="flex items-center space-x-3 sm:space-x-5">
+            <motion.div className="hidden lg:block" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link
+                href={bookingLink}
+                className={`flex items-center justify-center gap-2 border-2 rounded-full px-6 py-2 text-sm font-medium transition-colors duration-200 
+                ${linkHoverClass}`}
               >
-                {link.label}
-              </p>
-            </Link>
-          ))}
+                Book Now <FaBed className="w-4 h-4" />
+              </Link>
+            </motion.div>
+
+            <HiBars3BottomRight
+              onClick={openNav}
+              className={`w-7 h-7 sm:w-8 sm:h-8 cursor-pointer lg:hidden ${linkTextClass}`}
+            />
+          </div>
         </div>
 
-        {/* Book Now + Mobile Menu */}
-        <div className="flex items-center space-x-3 sm:space-x-5">
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Link
-              href={bookingLink}
-              className={`flex items-center justify-center gap-2 border-2 
-              rounded-full transition-colors duration-200 
-              text-[0.7rem] sm:text-[0.8rem] md:text-[0.9rem] lg:text-[1rem]
-              px-3 sm:px-4 md:px-6 py-1 sm:py-1.5 md:py-2
-              min-w-[80px] sm:min-w-[100px] md:min-w-[120px]
-              ${linkHoverClass}`}
-            >
-              Book Now <FaBed className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5" />
-            </Link>
-          </motion.div>
-
-          <HiBars3BottomRight
-            onClick={openNav}
-            className={`w-7 h-7 sm:w-8 sm:h-8 cursor-pointer 
-              ${linkTextClass}
-              lg:hidden
-              max-[1254px]:block
-              min-[1255px]:block`}
-          />
+        {/* ============ MOBILE SCROLL MENU ============ */}
+        <div className="lg:hidden w-full overflow-x-auto no-scrollbar pb-0.5">
+          <div className="flex space-x-2 whitespace-nowrap px-1">
+            {navLinks.map((link) => {
+              const isActive = pathname === link.url;
+              return (
+                <Link href={link.url} key={link.id}>
+                   <div 
+                     className={`
+                       flex items-center space-x-1.5 px-3 py-1 rounded-full border text-xs font-medium transition-all duration-200
+                       ${isActive 
+                         ? `bg-[${PRIMARY_GREEN}] border-[${PRIMARY_GREEN}] text-white` 
+                         : `bg-transparent border-gray-300 text-[${DARK_GREEN}] hover:bg-gray-50`
+                       }
+                     `}
+                   >
+                      {iconMap[link.label] && React.cloneElement(iconMap[link.label] as React.ReactElement, {
+                          className: `w-3.5 h-3.5 ${isActive ? 'text-white' : `text-[${PRIMARY_GREEN}]`}`
+                      })}
+                      <span>{link.label}</span>
+                   </div>
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </div>
 
-      {/* Curved SVG Background */}
+      {/* SVG Background (Desktop Only) */}
       <div className="absolute top-0 left-0 w-full overflow-visible -z-50 pointer-events-none hidden lg:block">
         <svg
-          className="hidden 
-            lg:block 
-            max-[1254px]:hidden
-            min-[1255px]:hidden
-            absolute top-0 left-0 w-full overflow-visible -z-50 pointer-events-none"
+          className="absolute top-0 left-0 w-full overflow-visible -z-50 pointer-events-none"
           style={{
-            position: "absolute",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: scrolled ? "250%" : "40%",
-            height:
-              windowWidth >= 1536
-                ? scrolled
-                  ? "105px"
-                  : "100px"
-                : windowWidth >= 1280
-                ? scrolled
-                  ? "110px"
-                  : "95px"
-                : windowWidth >= 1024
-                ? scrolled
-                  ? "108px"
-                  : "80px"
-                : scrolled
-                ? "20px"
-                : "10px",
-            transition: "width 1200ms ease, height 1200ms ease",
+             left: "50%",
+             transform: "translateX(-50%)",
+             width: scrolled ? "250%" : "40%",
+             // UPDATED: Reduced the SVG height values (from 105px/100px to 90px/85px) 
+             // to match the new shorter 10vh navbar height.
+             height: windowWidth >= 1536 ? (scrolled ? "90px" : "85px") : (scrolled ? "90px" : "85px"),
+             transition: "width 1200ms ease, height 1200ms ease",
           }}
           viewBox="0 0 1007 108"
           fill="none"
