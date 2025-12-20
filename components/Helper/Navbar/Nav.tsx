@@ -5,7 +5,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { FaBed } from "react-icons/fa";
 import { HiBars3BottomRight } from "react-icons/hi2";
-import { motion, AnimatePresence } from "motion/react"; // Added AnimatePresence
+import { motion, AnimatePresence } from "motion/react";
 import svgPaths from "./svgpath";
 import { Home, BedDouble, Settings, MapPin, Info, Calendar } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -15,12 +15,12 @@ const PRIMARY_GREEN = "#007326";
 const DARK_GREEN = "#003b14";
 
 const iconMap: Record<string, React.ReactNode> = {
-  Home: <Home className="w-3.5 h-3.5" />,
-  Rooms: <BedDouble className="w-3.5 h-3.5" />,
-  Services: <Settings className="w-3.5 h-3.5" />,
-  Places: <MapPin className="w-3.5 h-3.5" />,
-  "About Us": <Info className="w-3.5 h-3.5" />,
-  Booking: <Calendar className="w-3.5 h-3.5" />,
+  Home: <Home className="w-3 h-3" />,
+  Rooms: <BedDouble className="w-3 h-3" />,
+  Services: <Settings className="w-3 h-3" />,
+  Places: <MapPin className="w-3 h-3" />,
+  "About Us": <Info className="w-3 h-3" />,
+  Booking: <Calendar className="w-3 h-3" />,
 };
 
 type Props = {
@@ -77,24 +77,25 @@ const Nav = ({ openNav }: Props) => {
         animate={{ y: 0 }}
         transition={{ duration: 0.8 }}
       >
-        <div className="relative z-10 flex flex-col justify-center w-[92%] md:w-[88%] xl:w-[80%] mx-auto transition-colors duration-300 pt-2 pb-1 lg:pt-2 lg:pb-2 lg:h-[10vh]">
+        {/* UPDATED: Changed mobile padding 'pt-1' to 'pt-4' to add space from top */}
+        <div className="relative z-10 flex flex-col justify-center w-[92%] md:w-[88%] xl:w-[80%] mx-auto transition-colors duration-300 pt-4 pb-1 lg:py-3">
           
           {/* ============ TOP ROW ============ */}
-          <div className="flex items-center justify-between w-full mb-1 lg:mb-0">
+          <div className="flex items-center justify-between w-full mb-0.5 lg:mb-0">
             
             {/* Logo Section */}
             <motion.div className="flex flex-col items-center justify-center cursor-pointer" whileHover={{ scale: 1.05 }}>
               <div className="flex items-baseline leading-none">
-                <span className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold ${linkTextClass}`}>
+                <span className={`text-lg sm:text-2xl md:text-3xl lg:text-3xl font-semibold ${linkTextClass}`}>
                   Scenic
                 </span>
-                <span className={`ml-1 font-normal text-xs sm:text-sm md:text-lg lg:text-xl ${linkTextClass}`}>
+                <span className={`ml-1 font-normal text-xs sm:text-sm md:text-lg lg:text-lg ${linkTextClass}`}>
                   Cottage
                 </span>
               </div>
               <div className={`w-full flex justify-between ${linkTextClass} mt-[1px] sm:mt-[2px]`}>
                 {["S", "I", "G", "I", "R", "I", "Y", "A"].map((letter, i) => (
-                  <span key={i} className="text-[0.4rem] sm:text-[0.5rem] md:text-[0.6rem] lg:text-[0.75rem] font-medium">
+                  <span key={i} className="text-[0.35rem] sm:text-[0.5rem] md:text-[0.6rem] lg:text-[0.65rem] font-medium">
                     {letter}
                   </span>
                 ))}
@@ -128,11 +129,11 @@ const Nav = ({ openNav }: Props) => {
 
             {/* Right Side */}
             <div className="flex items-center space-x-3 sm:space-x-5">
-              {/* Desktop Button (Hidden on Mobile) */}
+              {/* Desktop Button */}
               <motion.div className="hidden lg:block" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Link
                   href={bookingLink}
-                  className={`flex items-center justify-center gap-2 border-2 rounded-full px-6 py-2 text-sm font-medium transition-colors duration-200 
+                  className={`flex items-center justify-center gap-2 border-2 rounded-full px-5 py-1.5 text-sm font-medium transition-colors duration-200 
                   ${linkHoverClass}`}
                 >
                   Book Now <FaBed className="w-4 h-4" />
@@ -141,13 +142,13 @@ const Nav = ({ openNav }: Props) => {
 
               <HiBars3BottomRight
                 onClick={openNav}
-                className={`w-7 h-7 sm:w-8 sm:h-8 cursor-pointer lg:hidden ${linkTextClass}`}
+                className={`w-6 h-6 sm:w-8 sm:h-8 cursor-pointer lg:hidden ${linkTextClass}`}
               />
             </div>
           </div>
 
           {/* ============ MOBILE SCROLL MENU ============ */}
-          <div className="lg:hidden w-full overflow-x-auto no-scrollbar pb-0.5">
+          <div className="lg:hidden w-full overflow-x-auto no-scrollbar pb-1">
             <div className="flex space-x-2 whitespace-nowrap px-1">
               {navLinks.map((link) => {
                 const isActive = pathname === link.url;
@@ -155,7 +156,7 @@ const Nav = ({ openNav }: Props) => {
                   <Link href={link.url} key={link.id}>
                     <div 
                       className={`
-                        flex items-center space-x-1.5 px-3 py-1 rounded-full border text-xs font-medium transition-all duration-200
+                        flex items-center space-x-1 px-2.5 py-0.5 rounded-full border text-[0.65rem] font-medium transition-all duration-200
                         ${isActive 
                           ? `bg-[${PRIMARY_GREEN}] border-[${PRIMARY_GREEN}] text-white` 
                           : `bg-transparent border-gray-300 text-[${DARK_GREEN}] hover:bg-gray-50`
@@ -163,7 +164,7 @@ const Nav = ({ openNav }: Props) => {
                       `}
                     >
                         {iconMap[link.label] && React.cloneElement(iconMap[link.label] as React.ReactElement, {
-                            className: `w-3.5 h-3.5 ${isActive ? 'text-white' : `text-[${PRIMARY_GREEN}]`}`
+                            className: `w-3 h-3 ${isActive ? 'text-white' : `text-[${PRIMARY_GREEN}]`}`
                         })}
                         <span>{link.label}</span>
                     </div>
@@ -182,7 +183,7 @@ const Nav = ({ openNav }: Props) => {
               left: "50%",
               transform: "translateX(-50%)",
               width: scrolled ? "250%" : "40%",
-              height: windowWidth >= 1536 ? (scrolled ? "105px" : "95px") : (scrolled ? "105px" : "95px"),
+              height: windowWidth >= 1536 ? (scrolled ? "80px" : "85px") : (scrolled ? "70px" : "75px"),
               transition: "width 1200ms ease, height 1200ms ease",
             }}
             viewBox="0 0 1007 108"
@@ -198,10 +199,7 @@ const Nav = ({ openNav }: Props) => {
         </div>
       </motion.div>
 
-      {/* ============ FLOATING MOBILE BOOK NOW BUTTON ============ */}
-      {/* - z-index 999: Higher than page content, lower than MobileNav overlay (1001)
-          - bottom-6 right-4: Positioned comfortably at bottom right
-      */}
+      {/* Floating Button */}
       <AnimatePresence>
         {isMobile && (
           <motion.div

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react"; // Ensure AnimatePresence is imported
+import { motion, AnimatePresence } from "motion/react"; 
 import BookingForm from "./BookingForm";
 
 // Define your images here
@@ -26,7 +26,10 @@ const Hero = () => {
   }, []);
 
   return (
-    <div className="relative w-full h-[120vh] sm:h-[100vh] overflow-hidden pt-[10vh]">
+    // UPDATED: 
+    // 1. Changed h-[120vh] to h-[100vh] so the container fits the screen exactly.
+    // 2. Removed large top padding (pt) since we are centering with flexbox now.
+    <div className="relative w-full h-[100vh] overflow-hidden">
       
       {/* --- Slideshow Background Start --- */}
       <div className="absolute top-0 left-0 w-full h-full bg-black">
@@ -41,8 +44,8 @@ const Hero = () => {
             exit={{ opacity: 0 }}
             // Transitions
             transition={{
-              opacity: { duration: 1.5, ease: "easeInOut" }, // Smooth fade
-              scale: { duration: 7, ease: "linear" }, // Slow zoom over 7 seconds
+              opacity: { duration: 1.5, ease: "easeInOut" }, 
+              scale: { duration: 7, ease: "linear" }, 
             }}
             className="absolute top-0 left-0 w-full h-full object-cover"
           />
@@ -53,7 +56,12 @@ const Hero = () => {
       </div>
       {/* --- Slideshow Background End --- */}
 
-      <div className="relative z-20 flex flex-col justify-start h-full px-4 py-8 sm:px-6 md:px-12 lg:px-20 xl:px-32 text-white">
+      {/* UPDATED CONTAINER:
+          - 'justify-center': Centers text vertically.
+          - 'pb-20': Lifts the text slightly up so it doesn't look too low.
+          - 'md:justify-start': Keeps desktop text at the top as before.
+      */}
+      <div className="relative z-20 flex flex-col justify-center md:justify-start h-full px-4 pb-20 md:pb-0 pt-[10vh] md:pt-[20vh] lg:pt-[25vh] sm:px-6 md:px-12 lg:px-20 xl:px-32 text-white">
         <motion.h1
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -139,22 +147,25 @@ const Hero = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
           className="
-            mt-6         
-            sm:mt-8      
-            md:mt-10     
-            lg:mt-12    
-            xl:mt-14  
+            hidden         
+            md:flex        
+
+            mt-6 
+            sm:mt-8 
+            md:mt-10 
+            lg:mt-12 
+            xl:mt-14 
 
             md:mb-[50px]
 
-            w-full      
+            w-full 
             sm:w-11/12
             md:w-4/5
             lg:w-3/4
             xl:w-3/5
-            2xl:w-3.5/4   
+            2xl:w-3.5/4 
 
-            max-w-md    
+            max-w-md 
             sm:max-w-lg
             md:max-w-xl
             lg:max-w-2xl
@@ -167,14 +178,14 @@ const Hero = () => {
             sm:rounded-[25px] 
             md:rounded-[30px]
 
-            p-4          
+            p-4 
             sm:p-6
             md:p-8
             lg:p-10
             xl:p-12
 
-            flex flex-col
-            gap-4        
+            flex-col
+            gap-4 
             sm:gap-5
             md:gap-6
             lg:gap-7
