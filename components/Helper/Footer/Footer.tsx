@@ -44,7 +44,7 @@ const Footer: React.FC = () => {
         </div>
         <div className="flex items-center gap-2">
           <FaPhoneAlt />
-          <span>+9474 055 8858</span>
+          <span>+94 74 055 8858</span>
         </div>
       </div>
 
@@ -88,11 +88,11 @@ const Footer: React.FC = () => {
   </div>
 
   {/* Copyright + Credits */}
-  <div className="py-6 text-center text-gray-600 text-sm md:text-base order-3 md:order-1">
- <p>
-  © 2026 Scenic Cottage.<br />
-  All rights reserved.
-</p>
+<div className="py-6 text-center text-gray-600 text-sm md:text-base order-3 md:order-1">
+  <p>
+    © {new Date().getFullYear()} Scenic Cottage.<br />
+    All rights reserved.
+  </p>
 
     <p className="mt-1 text-xs sm:text-sm text-gray-500">
       Crafted with care by{" "}
