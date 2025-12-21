@@ -5,6 +5,7 @@ import { FaArrowRight, FaCheck, FaTimes, FaUserFriends, FaBed, FaRulerCombined, 
 import { motion, AnimatePresence } from "framer-motion";
 import { BackendRoom } from "@/types/BackendRoom";
 import { useRouter } from 'next/navigation';
+import { safePush } from '@/lib/navigation';
 
 
 type Props = {
@@ -45,7 +46,7 @@ const handleBookNow = () => {
   if (checkIn) params.append('checkIn', checkIn);
   if (checkOut) params.append('checkOut', checkOut);
   
-  router.push(`/booking?${params.toString()}`);
+  safePush(router, `/booking?${params.toString()}`);
 };
 
   const images = [room.img1, room.img2, room.img3, room.img4].filter(Boolean);

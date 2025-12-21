@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { safePush } from '@/lib/navigation';
 
 export default function AdminLogin() {
   const [username, setUsername] = useState("");
@@ -21,7 +22,7 @@ export default function AdminLogin() {
     const data = await res.json();
     if (res.ok) {
       localStorage.setItem("adminToken", data.token); // store JWT
-      router.push("/admin/dashboard");
+      safePush(router, "/admin/dashboard");
     } else {
       setError(data.error);
     }

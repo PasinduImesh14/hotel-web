@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { safePush } from '@/lib/navigation';
 import Sidebar from "../../dashboard/Sidebar"; // adjust path if needed
 
 // ---------------------- TYPES ----------------------
@@ -212,7 +213,7 @@ export default function AddRoomPage() {
 
       setSuccessMessage("Room created successfully! Redirecting...");
       // ✅ FIX: absolute path
-      setTimeout(() => router.push("/admin/rooms/view"), 700);
+      setTimeout(() => safePush(router, "/admin/rooms/view"), 700);
     } catch (err: any) {
       setError(err.message || "Unknown error");
     } finally {

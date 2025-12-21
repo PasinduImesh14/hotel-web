@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { safePush } from '@/lib/navigation';
 import { Calendar, Users } from "lucide-react";
 
 interface InputFieldProps {
@@ -63,7 +64,7 @@ const BookingForm: React.FC = () => {
     if (checkIn) params.append('checkIn', checkIn);
     if (checkOut) params.append('checkOut', checkOut);
     
-router.push(`/rooms?${params.toString()}`);  };
+safePush(router, `/rooms?${params.toString()}`);  };
 
   return (
     <div className="flex items-center justify-center px-4 w-full">

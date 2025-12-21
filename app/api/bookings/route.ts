@@ -157,8 +157,8 @@ export async function POST(req: NextRequest) {
       booking,
     });
 
-  } catch (err) {
-    console.error("Booking creation error:", err);
+  } catch (err: any) {
+    console.error("Booking creation error:", err && err.stack ? err.stack : err);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../../dashboard/Sidebar";
 import { useRouter } from "next/navigation";
+import { safePush } from '@/lib/navigation';
 
 interface Bedroom {
   id: number;
@@ -198,7 +199,7 @@ export default function ViewRoomsTablePage() {
                   <td className="py-2 px-3">{kitchenItems}</td>
                   <td className="py-2 px-3 flex gap-2">
                     <button
-                      onClick={() => router.push(`/admin/rooms/edit/${room.id}`)}
+                      onClick={() => safePush(router, `/admin/rooms/edit/${room.id}`)}
                       className="bg-blue-600 text-white py-1 px-2 rounded hover:bg-blue-700 transition"
                     >
                       Edit

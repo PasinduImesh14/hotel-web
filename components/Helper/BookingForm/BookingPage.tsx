@@ -9,6 +9,7 @@ import { getData } from "country-list";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useSearchParams, useRouter } from "next/navigation";
+import { safePush } from '@/lib/navigation';
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
@@ -278,7 +279,7 @@ export default function BookingPage() {
       if (typeof window !== "undefined" && window.history.length > 1) {
         router.back();
       } else {
-        router.push("/");
+        safePush(router, "/");
       }
     }, 600);
   };
@@ -349,7 +350,7 @@ export default function BookingPage() {
         "Booking Confirmed! 🎉",
         "Your booking has been completed successfully. We look forward to hosting you! A confirmation email has been sent to your provided email address.",
         "success",
-        () => router.push("/")
+        () => safePush(router, "/")
       );
     } catch (error: any) {
       console.error("Booking error:", error);

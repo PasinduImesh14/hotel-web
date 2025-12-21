@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { safePush } from '@/lib/navigation';
 import Sidebar from "../../../dashboard/Sidebar";
 
 // ---------------------- TYPES ----------------------
@@ -209,7 +210,7 @@ export default function EditRoomPage() {
       if (!res.ok) throw new Error(data.error || "Failed to update room");
 
       alert("Room updated successfully!");
-      router.push("/admin/rooms/view");
+      safePush(router, "/admin/rooms/view");
     } catch (err: any) {
       setError(err.message);
     } finally {

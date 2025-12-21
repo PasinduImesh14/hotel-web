@@ -1,6 +1,7 @@
 "use client"; 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { safePush } from '@/lib/navigation';
 import Sidebar from "../dashboard/Sidebar";
 
 interface Customer {
@@ -80,7 +81,7 @@ export default function BookingListPage() {
   };
 
   const handleEdit = (id: number) => {
-    router.push(`/admin/bookings/edit/${id}`);
+    safePush(router, `/admin/bookings/edit/${id}`);
   };
 
   // Split datetime into date and time
