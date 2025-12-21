@@ -14,6 +14,21 @@ pnpm dev
 bun dev
 ```
 
+docker
+docker build -t mhartvishwajith448/travel-nextjs:latest .
+docker login
+
+docker push mhartvishwajith448/travel-nextjs:latest
+docker compose down
+docker compose up -d
+docker exec -it travel_nextjs sh
+docker exec -it travel_mysql mysql -u root -p
+
+cd /var/www/test
+sudo nano /etc/nginx/sites-enabled/sceniccottage.com.conf
+
+docker pull mhartvishwajith448/travel-nextjs:latest
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.

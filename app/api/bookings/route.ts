@@ -6,44 +6,46 @@ import {
   sendBookingConfirmationToCustomer,
 } from "@/lib/email";
 
-// ---------------- CREATE BOOKING ----------------
+/* ---------------------------------
+   CREATE BOOKING
+----------------------------------*/
 export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
-
     const { customer, roomId, checkIn, checkOut, otherDetails } = data;
 
-    // Validate required fields
+    /* -------- Validation -------- */
     if (!customer || !roomId || !checkIn || !checkOut) {
       return NextResponse.json(
-        { error: "Customer info, roomId, checkIn, and checkOut are required" },
+        { error: "Customer, roomId, checkIn, and checkOut are required" },
         { status: 400 }
       );
     }
 
-    // Require NIC or Passport
     if (
-      (!customer.nicNumber || customer.nicNumber.trim() === "") &&
-      (!customer.passportNumber || customer.passportNumber.trim() === "")
+      (!customer.nicNumber?.trim()) &&
+      (!customer.passportNumber?.trim())
     ) {
       return NextResponse.json(
-        { error: "Either NIC Number or Passport Number is required" },
+        { error: "NIC or Passport number is required" },
         { status: 400 }
       );
     }
 
-    // 1️⃣ Check if room exists
-    const roomExists = await prisma.room.findUnique({ where: { id: roomId } });
+    /* -------- Room check -------- */
+    const room = await prisma.room.findUnique({
+      where: { id: roomId },
+    });
 
-    if (!roomExists) {
+    if (!room) {
       return NextResponse.json(
-        { error: `Room with id ${roomId} does not exist` },
+        { error: `Room ${roomId} does not exist` },
         { status: 400 }
       );
     }
 
-    // 2️⃣ Check for booking conflict
-    const conflictingBooking = await prisma.booking.findFirst({
+    /* -------- Booking conflict -------- */
+    const conflict = await prisma.booking.findFirst({
       where: {
         roomId,
         checkIn: { lte: new Date(checkOut) },
@@ -51,64 +53,53 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    if (conflictingBooking) {
+    if (conflict) {
       return NextResponse.json(
         {
-          error: `Room is already booked from ${conflictingBooking.checkIn.toISOString()} to ${conflictingBooking.checkOut.toISOString()}`,
+          error: `Room already booked from ${conflict.checkIn.toISOString()} to ${conflict.checkOut.toISOString()}`,
         },
         { status: 400 }
       );
     }
 
-    // 3️⃣ SAFE OR filter — prevents Prisma TS error + UNIQUE constraint error
+    /* -------- Find / Create customer -------- */
     const filters: any[] = [];
 
-    if (customer.nicNumber && customer.nicNumber.trim() !== "") {
-      filters.push({ nicNumber: customer.nicNumber });
+    if (customer.nicNumber?.trim()) {
+      filters.push({ nicNumber: customer.nicNumber.trim() });
     }
 
-    if (customer.passportNumber && customer.passportNumber.trim() !== "") {
-      filters.push({ passportNumber: customer.passportNumber });
+    if (customer.passportNumber?.trim()) {
+      filters.push({ passportNumber: customer.passportNumber.trim() });
     }
 
     let customerRecord = null;
 
-    // Only apply OR if we actually have filters
     if (filters.length > 0) {
       customerRecord = await prisma.customer.findFirst({
         where: { OR: filters },
       });
     }
 
-    // 4️⃣ Create customer only if not found
     if (!customerRecord) {
       customerRecord = await prisma.customer.create({
         data: {
           name: customer.name,
-          nicNumber:
-            customer.nicNumber && customer.nicNumber.trim() !== ""
-              ? customer.nicNumber
-              : null, // prevents storing empty string → UNIQUE error
-
-          passportNumber:
-            customer.passportNumber && customer.passportNumber.trim() !== ""
-              ? customer.passportNumber
-              : null,
-
+          nicNumber: customer.nicNumber?.trim() || null,
+          passportNumber: customer.passportNumber?.trim() || null,
           address: customer.address,
           contactNumber: customer.contactNumber,
         },
       });
     }
 
-    // 5️⃣ Create booking + otherDetails
+    /* -------- Create booking -------- */
     const booking = await prisma.booking.create({
       data: {
         roomId,
         customerId: customerRecord.id,
         checkIn: new Date(checkIn),
         checkOut: new Date(checkOut),
-
         otherDetails: otherDetails
           ? {
               create: {
@@ -122,7 +113,6 @@ export async function POST(req: NextRequest) {
             }
           : undefined,
       },
-
       include: {
         customer: true,
         room: true,
@@ -130,101 +120,140 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    await sendBookingNotification(
+    /* ---------------------------------
+       NON-BLOCKING EMAILS (CRITICAL FIX)
+    ----------------------------------*/
+
+    // Admin notification (fire-and-forget)
+    sendBookingNotification(
       customer.name,
-      roomExists.name,
+      room.name,
       checkIn,
       checkOut,
       customer.contactNumber
+    ).catch((err) =>
+      console.error("Admin email failed:", err)
     );
-    if (data.customerEmail) {
-      await sendBookingConfirmationToCustomer(
+
+    // Customer confirmation (only if valid email)
+    if (
+      typeof data.customerEmail === "string" &&
+      data.customerEmail.includes("@")
+    ) {
+      sendBookingConfirmationToCustomer(
         customer.name,
         data.customerEmail,
-        roomExists.name,
+        room.name,
         checkIn,
         checkOut
+      ).catch((err) =>
+        console.error("Customer email failed:", err)
       );
     }
 
+    /* -------- Success -------- */
     return NextResponse.json({
       message: "Booking created successfully",
       booking,
     });
+
   } catch (err) {
     console.error("Booking creation error:", err);
     return NextResponse.json(
-      { error: "Something went wrong", details: String(err) },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
 }
 
-// ---------------- GET ALL BOOKINGS ----------------
+/* ---------------------------------
+   GET ALL BOOKINGS
+----------------------------------*/
 export async function GET() {
   try {
     const bookings = await prisma.booking.findMany({
       include: {
         customer: true,
-        room: true,
+        room: {
+          select: {
+            id: true,
+            name: true,
+            cost: true,
+            offer: true,
+            size: true,
+            capacity: true,
+            ac: true,
+            wifi: true,
+            fan: true,
+            balcony: true,
+            gardenView: true,
+            tv: true,
+            iron: true,
+            locker: true,
+            parking: true,
+            sittingArea: true,
+            dryingRack: true,
+            clothRack: true,
+            // exclude img1-4 and video
+          },
+        },
         otherDetails: true,
       },
-      orderBy: {
-        checkIn: "asc", // Orders bookings by check-in date
-      },
+      orderBy: { checkIn: "asc" },
     });
 
-    // Optional: convert dates to ISO strings for JSON
-    const bookingsFormatted = bookings.map((b) => ({
+    const formatted = bookings.map((b) => ({
       ...b,
       checkIn: b.checkIn.toISOString(),
       checkOut: b.checkOut.toISOString(),
     }));
 
-    return NextResponse.json({ bookings: bookingsFormatted });
+    return NextResponse.json({ bookings: formatted });
   } catch (err) {
     console.error("Fetch bookings error:", err);
     return NextResponse.json(
-      { error: "Something went wrong" },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
 }
-// ---------------- DELETE BOOKING ----------------
+/* ---------------------------------
+   DELETE BOOKING
+----------------------------------*/
 export async function DELETE(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
+    const id = new URL(req.url).searchParams.get("id");
 
     if (!id) {
       return NextResponse.json(
-        { error: "Booking id is required" },
+        { error: "Booking id required" },
         { status: 400 }
       );
     }
 
-    // Check if booking exists
-    const bookingExists = await prisma.booking.findUnique({
+    const booking = await prisma.booking.findUnique({
       where: { id: Number(id) },
     });
 
-    if (!bookingExists) {
+    if (!booking) {
       return NextResponse.json(
-        { error: `Booking with id ${id} does not exist` },
+        { error: "Booking not found" },
         { status: 404 }
       );
     }
 
-    // Delete the booking (also deletes otherDetails because of Prisma relation)
     await prisma.booking.delete({
       where: { id: Number(id) },
     });
 
-    return NextResponse.json({ message: "Booking deleted successfully" });
+    return NextResponse.json({
+      message: "Booking deleted successfully",
+    });
+
   } catch (err) {
     console.error("Delete booking error:", err);
     return NextResponse.json(
-      { error: "Something went wrong" },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
